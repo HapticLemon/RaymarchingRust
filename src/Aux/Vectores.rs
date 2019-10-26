@@ -1,4 +1,4 @@
-use crate::config::Point3;
+use crate::Aux::Definiciones::Point3;
 
 pub fn Add(a: Point3, b : Point3) -> Point3{
     let mut resultado:Point3 = Point3 { x: 0.0, y: 0.0, z: 0.0 };

@@ -31,3 +31,4 @@ pub const LIGHT: Point3 = Point3 { x: 0.0, y: 30.0, z: 0.0 };
 
 pub const COLOR: ColorRGB = ColorRGB { R: 200, G: 230, B: 0 };
 pub const ImageAspectRatio: f32 = WIDTH as f32 / HEIGHT as f32;
+

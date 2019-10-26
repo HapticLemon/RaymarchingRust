@@ -1,0 +1,9 @@
+TODO:
+    - Montar una estructura genérica para almacenar los objetos.
+    - Montar objeto Octaedro.
+    - Montar objeto Toro.
+    - Montar objeto Caja.
+
+[201910XX]  Estructura básica del programa. Primer raymarching.
+[20191026]  Añadida estructura de directorios para organizar el código.
+[20191026]  Añadido objeto Esfera.
