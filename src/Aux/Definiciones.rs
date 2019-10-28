@@ -18,6 +18,7 @@ pub const MAXSTEPS: u32 = 32;
 
 pub const CORRECCION: f32 = 0.5;
 pub const EPSILON: f32 = 0.01;
+pub const INFINITE: f32 = 100000.0;
 
 pub const FL: f32 = 0.5;
 pub const MINIMUM_HIT_DISTANCE: f32 = 0.05;
@@ -31,4 +32,5 @@ pub const LIGHT: Point3 = Point3 { x: 0.0, y: 30.0, z: 0.0 };
 
 pub const COLOR: ColorRGB = ColorRGB { R: 200, G: 230, B: 0 };
 pub const ImageAspectRatio: f32 = WIDTH as f32 / HEIGHT as f32;
+
 
