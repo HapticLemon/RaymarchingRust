@@ -14,6 +14,16 @@ use crate::Clases::Esfera::Esfera;
 use crate::Clases::Objeto::Objeto;
 use crate::Clases::Octaedro::Octaedro;
 
+#[macro_use]
+extern crate serde_derive;
+
+extern crate serde;
+extern crate serde_json;
+use serde_json::to_string;
+
+use std::io::BufReader;
+use std::fs::File;
+
 // Cálculo de la distancia a los elementos de la escena.
 // Por el momento y para simplificar, solamente se contempla un
 // objeto esfera.
@@ -92,6 +102,35 @@ fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> Col
     return(color)
 }
 
+// Cargamos los objetos leyendo un archivo JSON con la definición de la escena.
+//
+fn cargaEscena() -> Vec<Box<Objeto>>{
+
+    let file = File::open("/home/john/CLionProjects/RaymarchingRust/src/Aux/Escena.json").unwrap();
+    let reader = BufReader::new(file);
+    let itemJSONs: Vec<itemJSON> = serde_json::from_reader(reader).unwrap();
+
+    let mut Escena: Vec<Box<Objeto>> = Vec::new();
+
+    // Como hemos usado un default, le pondrá valor de ceros si no se incluye en el json.
+    for itemJSON in itemJSONs{
+        println!("itemJSON id: {}\tRadio: {}\t Traslacion ({},{},{})",itemJSON.id,itemJSON.radio, itemJSON.traslacion.x, itemJSON.traslacion.y,itemJSON.traslacion.z);
+        match itemJSON.tipo.as_ref(){
+            "Esfera" => {
+                let esfera: Esfera = Esfera{ id: itemJSON.id , tipo : itemJSON.tipo, radio : itemJSON.radio, traslacion : itemJSON.traslacion ,color :itemJSON.color};
+                Escena.push(Box::new(esfera));
+            }
+            "Octaedro" => {
+                let octaedro: Octaedro = Octaedro{ id: itemJSON.id , tipo : itemJSON.tipo, radio : itemJSON.radio, traslacion : itemJSON.traslacion ,color :itemJSON.color};
+                Escena.push(Box::new(octaedro));
+            }
+            _ => {/* No hace nada, default */}
+        }
+    }
+
+    return Escena;
+}
+
 // Bucle principal. Prepara los elementos usados en el cálculo del color.
 //
 fn main() {
@@ -114,19 +153,13 @@ fn main() {
     let fileOut = "Rustmarching.jpg";
 
     // Defino el archivo de la imagen.
-    //let mut imgbuf: image::ImageBuffer<image::Rgba<u8>, _> = image::ImageBuffer::new(WIDTH as u32, HEIGHT as u32);
     let mut imgbuf = image::ImageBuffer::new(WIDTH as u32, HEIGHT as u32);
 
     // Declaración del vector venérico.
-    //
-    let mut Escena: Vec<Box<Objeto>> = Vec::new();
-
     // Iniciamos la lista de objetos.
     //
-    let esfera_0: Esfera = Esfera{ id: 0 , radio : 5, traslacion : Point3 { x: 6.0, y: 0.0, z: 0.0 },color :ColorRGB { R: 200, G: 0, B: 0 }};
-    let octaedro_0: Octaedro = Octaedro{ id: 1 , radio : 7, traslacion : Point3 { x: 0.0, y: 5.0, z: 0.0 }, color : ColorRGB { R: 0, G: 0, B: 200 }};
-    Escena.push(Box::new(esfera_0));
-    Escena.push(Box::new(octaedro_0));
+    let mut Escena: Vec<Box<Objeto>> = Vec::new();
+    Escena = cargaEscena();
 
     // Proceso de la imagen
     //

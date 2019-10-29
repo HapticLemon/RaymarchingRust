@@ -1,15 +1,28 @@
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Deserialize, Default)]
 pub struct Point3 {
     pub x: f32,
     pub y: f32,
     pub z: f32,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Deserialize)]
 pub struct ColorRGB {
     pub R: u8,
     pub G: u8,
     pub B: u8,
+}
+
+// Estructura usada para leer los elementos del JSON
+//
+#[derive(Deserialize)]
+pub struct itemJSON {
+    pub id: u8,
+    pub tipo : String,
+    pub radio: u8,
+    // Nos permite hacer el campo opcional.
+    #[serde(default)]
+    pub traslacion : Point3,
+    pub color : ColorRGB
 }
 
 pub const WIDTH: u32 = 640;

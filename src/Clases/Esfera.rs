@@ -4,6 +4,7 @@ use crate::Aux::Vectores::{Length, Sub};
 
 pub struct Esfera{
     pub id : u8,
+    pub tipo : String,
     pub radio : u8,
     pub traslacion : Point3,
     pub color : ColorRGB
