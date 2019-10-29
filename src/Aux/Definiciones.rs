@@ -18,10 +18,15 @@ pub struct ColorRGB {
 pub struct itemJSON {
     pub id: u8,
     pub tipo : String,
+    #[serde(default)]
     pub radio: u8,
     // Nos permite hacer el campo opcional.
     #[serde(default)]
     pub traslacion : Point3,
+    #[serde(default)]
+    pub posicion : Point3,
+    #[serde(default)]
+    pub dimensiones : Point3,
     pub color : ColorRGB
 }
 

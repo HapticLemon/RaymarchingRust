@@ -1,6 +1,5 @@
 TODO:
     - Montar objeto Toro.
-    - Montar objeto Caja.
     - Documentar mejor la aplicación.
 
 [201910XX]  Estructura básica del programa. Primer raymarching.
@@ -13,3 +12,4 @@ TODO:
 [20191029]  Añadida traslación de objetos.
 [20191029]  Añadido color a los objetos.
 [20191029]  Montada la carga de la escena desde JSON.
+[20191029]  Añadido objeto Caja.

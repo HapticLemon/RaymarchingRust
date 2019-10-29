@@ -13,6 +13,7 @@ use std::cmp;
 use crate::Clases::Esfera::Esfera;
 use crate::Clases::Objeto::Objeto;
 use crate::Clases::Octaedro::Octaedro;
+use crate::Clases::Caja::Caja;
 
 #[macro_use]
 extern crate serde_derive;
@@ -123,6 +124,10 @@ fn cargaEscena() -> Vec<Box<Objeto>>{
             "Octaedro" => {
                 let octaedro: Octaedro = Octaedro{ id: itemJSON.id , tipo : itemJSON.tipo, radio : itemJSON.radio, traslacion : itemJSON.traslacion ,color :itemJSON.color};
                 Escena.push(Box::new(octaedro));
+            }
+            "Caja" => {
+                let caja: Caja = Caja{ id: itemJSON.id , tipo : itemJSON.tipo, posicion : itemJSON.posicion, dimensiones : itemJSON.dimensiones, traslacion : itemJSON.traslacion ,color :itemJSON.color};
+                Escena.push(Box::new(caja));
             }
             _ => {/* No hace nada, default */}
         }
