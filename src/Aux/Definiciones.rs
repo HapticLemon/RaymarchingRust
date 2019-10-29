@@ -5,6 +5,7 @@ pub struct Point3 {
     pub z: f32,
 }
 
+#[derive(Clone, Copy)]
 pub struct ColorRGB {
     pub R: u8,
     pub G: u8,

@@ -18,64 +18,28 @@ use crate::Clases::Octaedro::Octaedro;
 // Por el momento y para simplificar, solamente se contempla un
 // objeto esfera.
 //
-/*unsafe fn mapTheWorld(punto : Point3, Escena : Vec<Box<Objeto>>) -> f32{
-    let mut distancia : f32 = INFINITE;
-    let mut distanciaObjeto: f32 = 0.0;
-
-    for item in Escena.iter() {
-        distanciaObjeto = item.distancia(punto);
-        if distanciaObjeto < distancia {
-            distancia = distanciaObjeto;
-        }
-    }
-    return distancia;
-}*/
-
-fn mapTheWorld(punto : Point3, Escena : &Vec<Box<dyn Objeto>>) -> (f32, u8){
+fn mapTheWorld(punto : Point3, Escena : &Vec<Box<dyn Objeto>>) -> (f32, u8, ColorRGB){
     let mut distancia : f32 = 1000.0;
     let mut distanciaObjeto: f32 = 0.0;
     let mut idObjeto : u8 = 0;
     let mut contador : u8 = 0;
+    let mut color:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
 
 
     for item in Escena.iter() {
-        //distanciaObjeto = calculaDistancia(punto,item);
         distanciaObjeto = item.distancia(punto);
         if distanciaObjeto < distancia {
             distancia = distanciaObjeto;
             idObjeto = contador;
+            color = item.getColor();
         }
         contador +=1 ;
     }
-    return (distancia, idObjeto);
+    return (distancia, idObjeto, color);
 }
-// Cálculo de color en cada punto de la escena.
-//
-
-/*unsafe fn calculateNormal(punto : Point3, Escena : Vec<Box<Objeto>>) -> Point3{
-    let mut gradiente: Point3 = Point3 { x: 1.0, y: 0.0, z: 0.0 };
-
-    let Escena2 = Escena.clone();
-    let Escena3 = Escena.clone();
-    let Escena4 = Escena.clone();
-    let Escena5 = Escena.clone();
-    let Escena6 = Escena.clone();
-
-    gradiente.x = mapTheWorld(Point3 { x: punto.x + EPSILON, y: punto.y, z: punto.z }, Escena) - mapTheWorld(Point3 { x: punto.x - EPSILON, y: punto.y, z: punto.z }, Escena2);
-    gradiente.y = mapTheWorld(Point3 { x: punto.x , y: punto.y + EPSILON, z: punto.z }, Escena3) - mapTheWorld(Point3 { x: punto.x, y: punto.y - EPSILON, z: punto.z }, Escena4);
-    gradiente.z = mapTheWorld(Point3 { x: punto.x , y: punto.y, z: punto.z + EPSILON}, Escena5) - mapTheWorld(Point3 { x: punto.x , y: punto.y, z: punto.z - EPSILON}, Escena6);
-
-    Aux::Vectores::MultiplyByScalar(gradiente,-1.0);
-
-    return (Aux::Vectores::Normalize(gradiente))
-}*/
 
 fn calculateNormal(punto : Point3, Escena : &Vec<Box<dyn Objeto>>, idObjeto :usize) -> Point3{
     let mut gradiente: Point3 = Point3 { x: 1.0, y: 0.0, z: 0.0 };
-
-    //gradiente.x = calculaDistancia(Definiciones::Point3 { x: punto.x + EPSILON, y: punto.y, z: punto.z }, &Escena[idObjeto]) - calculaDistancia(Definiciones::Point3 { x: punto.x - EPSILON, y: punto.y, z: punto.z }, &Escena[idObjeto]);
-    //gradiente.y = calculaDistancia(Definiciones::Point3 { x: punto.x , y: punto.y + EPSILON, z: punto.z }, &Escena[idObjeto]) - calculaDistancia(Definiciones::Point3 { x: punto.x, y: punto.y - EPSILON, z: punto.z }, &Escena[idObjeto]);
-    //gradiente.z = calculaDistancia(Definiciones::Point3 { x: punto.x , y: punto.y, z: punto.z + EPSILON}, &Escena[idObjeto]) - calculaDistancia(Definiciones::Point3 { x: punto.x , y: punto.y, z: punto.z - EPSILON}, &Escena[idObjeto]);
 
     gradiente.x = &Escena[idObjeto].distancia(Point3 { x: punto.x + EPSILON, y: punto.y, z: punto.z }) - &Escena[idObjeto].distancia(Point3 { x: punto.x - EPSILON, y: punto.y, z: punto.z });
     gradiente.y = &Escena[idObjeto].distancia(Point3 { x: punto.x , y: punto.y + EPSILON, z: punto.z }) - &Escena[idObjeto].distancia(Point3 { x: punto.x , y: punto.y - EPSILON, z: punto.z });
@@ -86,12 +50,12 @@ fn calculateNormal(punto : Point3, Escena : &Vec<Box<dyn Objeto>>, idObjeto :usi
     return (Normalize(gradiente))
 }
 
-fn ilumina(punto : Point3, diffuseIntensity : f32, normal :Point3) -> ColorRGB{
+fn ilumina(punto : Point3, diffuseIntensity : f32, normal :Point3, colorObjeto : ColorRGB) -> ColorRGB{
     let mut color:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };;
 
-    color.R = (COLOR.R as f32 * diffuseIntensity) as u8;
-    color.G = (COLOR.G as f32 * diffuseIntensity) as u8;
-    color.B = (COLOR.B as f32 * diffuseIntensity) as u8;
+    color.R = (colorObjeto.R as f32 * diffuseIntensity) as u8;
+    color.G = (colorObjeto.G as f32 * diffuseIntensity) as u8;
+    color.B = (colorObjeto.B as f32 * diffuseIntensity) as u8;
 
     return (color);
 
@@ -108,16 +72,18 @@ fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> Col
     let mut distancia: f32 = 0.0;
 
     let mut color:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
+    let mut colorObjeto:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
+
     let mut idObjeto : u8 = 0;
 
     for x in 0..MAXSTEPS{
         punto = Add(ro,MultiplyByScalar(rd,t));
-        let (distancia, idObjeto) = mapTheWorld(punto, Escena);
+        let (distancia, idObjeto, colorObjeto) = mapTheWorld(punto, Escena);
         if distancia < MINIMUM_HIT_DISTANCE {
             directionToLight = Normalize(Sub(punto,LIGHT));
             normal = calculateNormal(punto, &Escena, idObjeto as usize);
             diffuseIntensity = Dot(normal, directionToLight).max(0.0);
-            color = ilumina(punto, diffuseIntensity, normal);
+            color = ilumina(punto, diffuseIntensity, normal, colorObjeto);
             return color
         }
         t += distancia
@@ -151,18 +117,16 @@ fn main() {
     //let mut imgbuf: image::ImageBuffer<image::Rgba<u8>, _> = image::ImageBuffer::new(WIDTH as u32, HEIGHT as u32);
     let mut imgbuf = image::ImageBuffer::new(WIDTH as u32, HEIGHT as u32);
 
-    let esfera_0: Esfera = Esfera{ id: 0 , radio : 5};
-    let octaedro_0: Octaedro = Octaedro{ id: 1 , radio : 7};
-
-
+    // Declaración del vector venérico.
+    //
     let mut Escena: Vec<Box<Objeto>> = Vec::new();
-
-    Escena.push(Box::new(esfera_0));
-    Escena.push(Box::new(octaedro_0));
 
     // Iniciamos la lista de objetos.
     //
-
+    let esfera_0: Esfera = Esfera{ id: 0 , radio : 5, traslacion : Point3 { x: 6.0, y: 0.0, z: 0.0 },color :ColorRGB { R: 200, G: 0, B: 0 }};
+    let octaedro_0: Octaedro = Octaedro{ id: 1 , radio : 7, traslacion : Point3 { x: 0.0, y: 5.0, z: 0.0 }, color : ColorRGB { R: 0, G: 0, B: 200 }};
+    Escena.push(Box::new(esfera_0));
+    Escena.push(Box::new(octaedro_0));
 
     // Proceso de la imagen
     //
@@ -179,6 +143,7 @@ fn main() {
         ro = Add(Add(Add(EYE,MultiplyByScalar(FORWARD,FL)),MultiplyByScalar(RIGHT, PixelCamera_X)),MultiplyByScalar(UP, PixelCamera_Y));
         rd = Normalize(Sub(ro, EYE));
 
+        // Pasa referencias & o el compilador se quejará de que quieres pasar algo movido.
         color = raymarching(ro,rd, &Escena);
         *pixel = image::Rgb([color.R,color.G,color.B]);
     }

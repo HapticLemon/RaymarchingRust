@@ -1,5 +1,11 @@
 use crate::Aux::Definiciones::Point3;
 
+// Coordenadas del punto en valores absolutos.
+//
+pub fn Abs(a: Point3) -> Point3 {
+    return Point3{x : a.x.abs(), y : a.y.abs(), z : a.z.abs() }
+}
+
 pub fn Add(a: Point3, b : Point3) -> Point3{
     let mut resultado:Point3 = Point3 { x: 0.0, y: 0.0, z: 0.0 };
 

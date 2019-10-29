@@ -1,9 +1,15 @@
 TODO:
-    - Montar una estructura genérica para almacenar los objetos.
-    - Montar objeto Octaedro.
     - Montar objeto Toro.
     - Montar objeto Caja.
+    - Montar lectura de escena desde json.
+    - Documentar mejor la aplicación.
 
 [201910XX]  Estructura básica del programa. Primer raymarching.
 [20191026]  Añadida estructura de directorios para organizar el código.
 [20191026]  Añadido objeto Esfera.
+
+[20191028]  Añadido vector genérico de elementos.
+[20191028]  Añadido Octaedro.
+
+[20191029]  Añadida traslación de objetos.
+[20191029]  Añadido color a los objetos.
