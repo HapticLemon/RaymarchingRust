@@ -3,7 +3,6 @@ TODO:
     - Documentar mejor la aplicación.
     - Implementar sombras.
     - Mirar temas de antialias.
-    - Textura con ruido.
 
 [201910XX]  Estructura básica del programa. Primer raymarching.
 [20191026]  Añadida estructura de directorios para organizar el código.
@@ -16,3 +15,5 @@ TODO:
 [20191029]  Añadido color a los objetos.
 [20191029]  Montada la carga de la escena desde JSON.
 [20191029]  Añadido objeto Caja.
+
+[20191030]  Añadidas varias texturas con ruido.
