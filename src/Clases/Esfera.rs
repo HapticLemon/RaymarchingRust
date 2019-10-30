@@ -1,5 +1,5 @@
 use crate::Clases::Objeto::Objeto;
-use crate::Aux::Definiciones::{Point3, ColorRGB};
+use crate::Aux::Definiciones::{Point3, ColorRGB, Materiales};
 use crate::Aux::Vectores::{Length, Sub};
 
 pub struct Esfera{
@@ -7,7 +7,8 @@ pub struct Esfera{
     pub tipo : String,
     pub radio : u8,
     pub traslacion : Point3,
-    pub color : ColorRGB
+    pub color : ColorRGB,
+    pub material : Materiales
 }
 
 impl Objeto for Esfera {
@@ -16,6 +17,8 @@ impl Objeto for Esfera {
     }
 
     fn getColor(&self) -> ColorRGB {return self.color}
+
+    fn getMaterial(&self) -> Materiales {return self.material}
 
     fn distancia(&self,punto:Point3) -> f32 {
         //(Length(punto) - self.radio as f32)

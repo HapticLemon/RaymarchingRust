@@ -12,6 +12,13 @@ pub struct ColorRGB {
     pub B: u8,
 }
 
+#[derive(Clone, Copy, Deserialize)]
+pub enum Materiales {
+    NOMAT,
+    PERLIN,
+    WORLEY
+}
+
 // Estructura usada para leer los elementos del JSON
 //
 #[derive(Deserialize)]
@@ -27,7 +34,8 @@ pub struct itemJSON {
     pub posicion : Point3,
     #[serde(default)]
     pub dimensiones : Point3,
-    pub color : ColorRGB
+    pub color : ColorRGB,
+    pub material : Materiales
 }
 
 pub const WIDTH: u32 = 640;

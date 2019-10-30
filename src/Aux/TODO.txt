@@ -1,6 +1,9 @@
 TODO:
     - Montar objeto Toro.
     - Documentar mejor la aplicación.
+    - Implementar sombras.
+    - Mirar temas de antialias.
+    - Textura con ruido.
 
 [201910XX]  Estructura básica del programa. Primer raymarching.
 [20191026]  Añadida estructura de directorios para organizar el código.

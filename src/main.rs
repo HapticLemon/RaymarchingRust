@@ -25,16 +25,19 @@ use serde_json::to_string;
 use std::io::BufReader;
 use std::fs::File;
 
+use noise::{NoiseFn, Perlin, Worley};
+
 // Cálculo de la distancia a los elementos de la escena.
 // Por el momento y para simplificar, solamente se contempla un
 // objeto esfera.
 //
-fn mapTheWorld(punto : Point3, Escena : &Vec<Box<dyn Objeto>>) -> (f32, u8, ColorRGB){
+fn mapTheWorld(punto : Point3, Escena : &Vec<Box<dyn Objeto>>) -> (f32, u8, ColorRGB, Materiales){
     let mut distancia : f32 = 1000.0;
     let mut distanciaObjeto: f32 = 0.0;
     let mut idObjeto : u8 = 0;
     let mut contador : u8 = 0;
     let mut color:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
+    let mut material : Materiales = Materiales::NOMAT;
 
 
     for item in Escena.iter() {
@@ -43,10 +46,11 @@ fn mapTheWorld(punto : Point3, Escena : &Vec<Box<dyn Objeto>>) -> (f32, u8, Colo
             distancia = distanciaObjeto;
             idObjeto = contador;
             color = item.getColor();
+            material = item.getMaterial();
         }
         contador +=1 ;
     }
-    return (distancia, idObjeto, color);
+    return (distancia, idObjeto, color, material);
 }
 
 fn calculateNormal(punto : Point3, Escena : &Vec<Box<dyn Objeto>>, idObjeto :usize) -> Point3{
@@ -61,12 +65,36 @@ fn calculateNormal(punto : Point3, Escena : &Vec<Box<dyn Objeto>>, idObjeto :usi
     return (Normalize(gradiente))
 }
 
-fn ilumina(punto : Point3, diffuseIntensity : f32, normal :Point3, colorObjeto : ColorRGB) -> ColorRGB{
+fn ilumina(punto : Point3, diffuseIntensity : f32, normal :Point3, colorObjeto : ColorRGB, materialObjeto : Materiales) -> ColorRGB{
     let mut color:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };;
 
-    color.R = (colorObjeto.R as f32 * diffuseIntensity) as u8;
-    color.G = (colorObjeto.G as f32 * diffuseIntensity) as u8;
-    color.B = (colorObjeto.B as f32 * diffuseIntensity) as u8;
+    //let perlinValue = perlin.get([42.4, 37.7, 2.8]);
+
+    match materialObjeto{
+        Materiales::NOMAT =>{
+            color.R = (colorObjeto.R as f32 * diffuseIntensity) as u8;
+            color.G = (colorObjeto.G as f32 * diffuseIntensity) as u8;
+            color.B = (colorObjeto.B as f32 * diffuseIntensity) as u8;
+        }
+        Materiales::PERLIN =>{
+            let perlin = Perlin::new();
+            let perlinValue = perlin.get([punto.x as f64, punto.y as f64, punto.z as f64]).abs();
+
+            color.R = (colorObjeto.R as f32 * perlinValue as f32) as u8;
+            color.G = (colorObjeto.G as f32 * perlinValue as f32) as u8;
+            color.B = (colorObjeto.B as f32 * perlinValue as f32) as u8;
+        }
+        Materiales::WORLEY =>{
+            let worley = Worley::new();
+            let worleyValue = worley.get([punto.x as f64, punto.y as f64, punto.z as f64]).abs();
+
+            color.R = (colorObjeto.R as f32 * worleyValue as f32) as u8;
+            color.G = (colorObjeto.G as f32 * worleyValue as f32) as u8;
+            color.B = (colorObjeto.B as f32 * worleyValue as f32) as u8;
+        }
+        _ => {/* No hace nada, default */}
+    }
+
 
     return (color);
 
@@ -86,15 +114,16 @@ fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> Col
     let mut colorObjeto:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
 
     let mut idObjeto : u8 = 0;
+    let mut materialObjeto : Materiales = Materiales::NOMAT;
 
     for x in 0..MAXSTEPS{
         punto = Add(ro,MultiplyByScalar(rd,t));
-        let (distancia, idObjeto, colorObjeto) = mapTheWorld(punto, Escena);
+        let (distancia, idObjeto, colorObjeto, materialObjeto) = mapTheWorld(punto, Escena);
         if distancia < MINIMUM_HIT_DISTANCE {
             directionToLight = Normalize(Sub(punto,LIGHT));
             normal = calculateNormal(punto, &Escena, idObjeto as usize);
             diffuseIntensity = Dot(normal, directionToLight).max(0.0);
-            color = ilumina(punto, diffuseIntensity, normal, colorObjeto);
+            color = ilumina(punto, diffuseIntensity, normal, colorObjeto, materialObjeto);
             return color
         }
         t += distancia
@@ -116,17 +145,18 @@ fn cargaEscena() -> Vec<Box<Objeto>>{
     // Como hemos usado un default, le pondrá valor de ceros si no se incluye en el json.
     for itemJSON in itemJSONs{
         println!("itemJSON id: {}\tRadio: {}\t Traslacion ({},{},{})",itemJSON.id,itemJSON.radio, itemJSON.traslacion.x, itemJSON.traslacion.y,itemJSON.traslacion.z);
+
         match itemJSON.tipo.as_ref(){
             "Esfera" => {
-                let esfera: Esfera = Esfera{ id: itemJSON.id , tipo : itemJSON.tipo, radio : itemJSON.radio, traslacion : itemJSON.traslacion ,color :itemJSON.color};
+                let esfera: Esfera = Esfera{ id: itemJSON.id , tipo : itemJSON.tipo, radio : itemJSON.radio, traslacion : itemJSON.traslacion ,color :itemJSON.color, material :itemJSON.material};
                 Escena.push(Box::new(esfera));
             }
             "Octaedro" => {
-                let octaedro: Octaedro = Octaedro{ id: itemJSON.id , tipo : itemJSON.tipo, radio : itemJSON.radio, traslacion : itemJSON.traslacion ,color :itemJSON.color};
+                let octaedro: Octaedro = Octaedro{ id: itemJSON.id , tipo : itemJSON.tipo, radio : itemJSON.radio, traslacion : itemJSON.traslacion ,color :itemJSON.color, material :itemJSON.material};
                 Escena.push(Box::new(octaedro));
             }
             "Caja" => {
-                let caja: Caja = Caja{ id: itemJSON.id , tipo : itemJSON.tipo, posicion : itemJSON.posicion, dimensiones : itemJSON.dimensiones, traslacion : itemJSON.traslacion ,color :itemJSON.color};
+                let caja: Caja = Caja{ id: itemJSON.id , tipo : itemJSON.tipo, posicion : itemJSON.posicion, dimensiones : itemJSON.dimensiones, traslacion : itemJSON.traslacion ,color :itemJSON.color, material :itemJSON.material};
                 Escena.push(Box::new(caja));
             }
             _ => {/* No hace nada, default */}
@@ -186,6 +216,9 @@ fn main() {
         *pixel = image::Rgb([color.R,color.G,color.B]);
     }
 
+    let perlin = Perlin::new();
+    let val = perlin.get([42.4, 37.7, 2.8]);
+    println!("Perlin {}", val);
     // Guardo la imagen
     imgbuf.save(fileOut).unwrap();
 
