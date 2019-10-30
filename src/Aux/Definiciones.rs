@@ -16,7 +16,8 @@ pub struct ColorRGB {
 pub enum Materiales {
     NOMAT,
     PERLIN,
-    WORLEY
+    WORLEY,
+    HYBRID
 }
 
 // Estructura usada para leer los elementos del JSON

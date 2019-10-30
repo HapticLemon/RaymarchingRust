@@ -25,7 +25,7 @@ use serde_json::to_string;
 use std::io::BufReader;
 use std::fs::File;
 
-use noise::{NoiseFn, Perlin, Worley};
+use noise::{NoiseFn, Perlin, Worley, Turbulence, HybridMulti};
 
 // Cálculo de la distancia a los elementos de la escena.
 // Por el momento y para simplificar, solamente se contempla un
@@ -91,6 +91,14 @@ fn ilumina(punto : Point3, diffuseIntensity : f32, normal :Point3, colorObjeto :
             color.R = (colorObjeto.R as f32 * worleyValue as f32) as u8;
             color.G = (colorObjeto.G as f32 * worleyValue as f32) as u8;
             color.B = (colorObjeto.B as f32 * worleyValue as f32) as u8;
+        }
+        Materiales::HYBRID =>{
+            let hybrid = HybridMulti::new();
+            let hybridValue = hybrid.get([punto.x as f64, punto.y as f64, punto.z as f64]).abs();
+
+            color.R = (colorObjeto.R as f32 * hybridValue as f32) as u8;
+            color.G = (colorObjeto.G as f32 * hybridValue as f32) as u8;
+            color.B = (colorObjeto.B as f32 * hybridValue as f32) as u8;
         }
         _ => {/* No hace nada, default */}
     }
@@ -216,9 +224,6 @@ fn main() {
         *pixel = image::Rgb([color.R,color.G,color.B]);
     }
 
-    let perlin = Perlin::new();
-    let val = perlin.get([42.4, 37.7, 2.8]);
-    println!("Perlin {}", val);
     // Guardo la imagen
     imgbuf.save(fileOut).unwrap();
 
