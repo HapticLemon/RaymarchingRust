@@ -63,6 +63,7 @@ pub const LIGHT: Point3 = Point3 { x: 200.0, y: 200.0, z: 180.0 };
 pub const COLOR: ColorRGB = ColorRGB { R: 200, G: 230, B: 0 };
 pub const ImageAspectRatio: f32 = WIDTH as f32 / HEIGHT as f32;
 
+// Ángulo para el FOV. Actúa como una especie de zoom.
 pub const ALPHA :f32 = 55.0;
 
 
