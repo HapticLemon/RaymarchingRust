@@ -26,6 +26,7 @@ use std::io::BufReader;
 use std::fs::File;
 
 use noise::{NoiseFn, Perlin, Worley, Turbulence, HybridMulti};
+use std::f32::consts::PI;
 
 // Cálculo de la distancia a los elementos de la escena.
 // Por el momento y para simplificar, solamente se contempla un
@@ -60,12 +61,12 @@ fn calculateNormal(punto : Point3, Escena : &Vec<Box<dyn Objeto>>, idObjeto :usi
     gradiente.y = &Escena[idObjeto].distancia(Point3 { x: punto.x , y: punto.y + EPSILON, z: punto.z }) - &Escena[idObjeto].distancia(Point3 { x: punto.x , y: punto.y - EPSILON, z: punto.z });
     gradiente.z = &Escena[idObjeto].distancia(Point3 { x: punto.x , y: punto.y , z: punto.z + EPSILON}) - &Escena[idObjeto].distancia(Point3 { x: punto.x , y: punto.y, z: punto.z - EPSILON});
 
-    MultiplyByScalar(gradiente,-1.0);
+    //MultiplyByScalar(gradiente,-1.0);
 
     return (Normalize(gradiente))
 }
 
-fn ilumina(punto : Point3, diffuseIntensity : f32, normal :Point3, colorObjeto : ColorRGB, materialObjeto : Materiales) -> ColorRGB{
+fn ilumina(punto : Point3, diffuseIntensity : f32, colorObjeto : ColorRGB, materialObjeto : Materiales) -> ColorRGB{
     let mut color:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };;
 
     //let perlinValue = perlin.get([42.4, 37.7, 2.8]);
@@ -80,9 +81,9 @@ fn ilumina(punto : Point3, diffuseIntensity : f32, normal :Point3, colorObjeto :
             let perlin = Perlin::new();
             let perlinValue = perlin.get([punto.x as f64, punto.y as f64, punto.z as f64]).abs();
 
-            color.R = (colorObjeto.R as f32 * perlinValue as f32) as u8;
-            color.G = (colorObjeto.G as f32 * perlinValue as f32) as u8;
-            color.B = (colorObjeto.B as f32 * perlinValue as f32) as u8;
+            color.R = (colorObjeto.R as f32 * perlinValue as f32 * diffuseIntensity) as u8;
+            color.G = (colorObjeto.G as f32 * perlinValue as f32 * diffuseIntensity) as u8;
+            color.B = (colorObjeto.B as f32 * perlinValue as f32 * diffuseIntensity) as u8;
         }
         Materiales::WORLEY =>{
             let worley = Worley::new();
@@ -118,7 +119,7 @@ fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> Col
     let mut diffuseIntensity: f32 = 0.0;
     let mut distancia: f32 = 0.0;
 
-    let mut color:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
+    let mut color:ColorRGB = ColorRGB { R: 50, G: 50, B: 50 };
     let mut colorObjeto:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
 
     let mut idObjeto : u8 = 0;
@@ -128,10 +129,11 @@ fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> Col
         punto = Add(ro,MultiplyByScalar(rd,t));
         let (distancia, idObjeto, colorObjeto, materialObjeto) = mapTheWorld(punto, Escena);
         if distancia < MINIMUM_HIT_DISTANCE {
-            directionToLight = Normalize(Sub(punto,LIGHT));
+            //directionToLight = Normalize(Sub(punto,LIGHT));
+            directionToLight = Normalize(Sub(LIGHT,punto));
             normal = calculateNormal(punto, &Escena, idObjeto as usize);
             diffuseIntensity = Dot(normal, directionToLight).max(0.0);
-            color = ilumina(punto, diffuseIntensity, normal, colorObjeto, materialObjeto);
+            color = ilumina(punto, diffuseIntensity,  colorObjeto, materialObjeto);
             return color
         }
         t += distancia
@@ -204,6 +206,10 @@ fn main() {
     let mut Escena: Vec<Box<Objeto>> = Vec::new();
     Escena = cargaEscena();
 
+    // Calculo el Field of View. El ángulo es de 45 grados.
+    //
+    let  FOV : f32 = (ALPHA / 2.0 * PI / 180.0).tan();
+
     // Proceso de la imagen
     //
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
@@ -213,11 +219,14 @@ fn main() {
         PixelScreen_X = 2.0 * NDC_X - 1.0;
         PixelScreen_Y = 2.0 * NDC_Y - 1.0;
 
-        PixelCamera_X = PixelScreen_X * ImageAspectRatio;
-        PixelCamera_Y = PixelScreen_Y;
+        PixelCamera_X = PixelScreen_X * ImageAspectRatio * FOV;
+        PixelCamera_Y = PixelScreen_Y * FOV;
 
-        ro = Add(Add(Add(EYE,MultiplyByScalar(FORWARD,FL)),MultiplyByScalar(RIGHT, PixelCamera_X)),MultiplyByScalar(UP, PixelCamera_Y));
-        rd = Normalize(Sub(ro, EYE));
+        //ro = Add(Add(Add(EYE,MultiplyByScalar(FORWARD,FL)),MultiplyByScalar(RIGHT, PixelCamera_X)),MultiplyByScalar(UP, PixelCamera_Y));
+        //rd = Normalize(Sub(ro, EYE));
+
+        ro = EYE;
+        rd = Normalize(Sub(Point3{x : PixelCamera_X, y: PixelCamera_Y, z : -1.0}, ro));
 
         // Pasa referencias & o el compilador se quejará de que quieres pasar algo movido.
         color = raymarching(ro,rd, &Escena);

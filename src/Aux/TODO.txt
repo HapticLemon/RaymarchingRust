@@ -3,6 +3,7 @@ TODO:
     - Documentar mejor la aplicación.
     - Implementar sombras.
     - Mirar temas de antialias.
+    - Creo que la iluinación no es correcta cuando la fuente está en 0 0 z.
 
 [201910XX]  Estructura básica del programa. Primer raymarching.
 [20191026]  Añadida estructura de directorios para organizar el código.
@@ -17,3 +18,5 @@ TODO:
 [20191029]  Añadido objeto Caja.
 
 [20191030]  Añadidas varias texturas con ruido.
+
+[20191031]  Implementado FOV para reducir distorsión.
