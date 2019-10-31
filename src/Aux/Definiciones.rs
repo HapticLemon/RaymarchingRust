@@ -19,7 +19,8 @@ pub enum Materiales {
     NOMAT,
     PERLIN,
     WORLEY,
-    HYBRID
+    HYBRID,
+    OPENSIMPLEX
 }
 
 // Estructura usada para leer los elementos del JSON
@@ -41,8 +42,8 @@ pub struct itemJSON {
     pub material : Materiales
 }
 
-pub const WIDTH: u32 = 640;
-pub const HEIGHT: u32 = 480;
+pub const WIDTH: u32 = 1024;
+pub const HEIGHT: u32 = 683;
 
 pub const MAXSTEPS: u32 = 32;
 
@@ -51,7 +52,7 @@ pub const EPSILON: f32 = 0.01;
 pub const INFINITE: f32 = 100000.0;
 
 pub const FL: f32 = 0.5;
-pub const MINIMUM_HIT_DISTANCE: f32 = 0.05;
+pub const MINIMUM_HIT_DISTANCE: f32 = 0.01;
 
 pub const EYE: Point3 = Point3 { x: 0.0, y: 0.0, z: 0.0 };
 pub const RIGHT: Point3 = Point3 { x: 1.0, y: 0.0, z: 0.0 };

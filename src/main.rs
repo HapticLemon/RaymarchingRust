@@ -25,7 +25,7 @@ use serde_json::to_string;
 use std::io::BufReader;
 use std::fs::File;
 
-use noise::{NoiseFn, Perlin, Worley, Turbulence, HybridMulti};
+use noise::{NoiseFn, Perlin, Worley, Turbulence, HybridMulti, OpenSimplex};
 use std::f32::consts::PI;
 
 // Cálculo de la distancia a los elementos de la escena.
@@ -89,17 +89,25 @@ fn ilumina(punto : Point3, diffuseIntensity : f32, colorObjeto : ColorRGB, mater
             let worley = Worley::new();
             let worleyValue = worley.get([punto.x as f64, punto.y as f64, punto.z as f64]).abs();
 
-            color.R = (colorObjeto.R as f32 * worleyValue as f32) as u8;
-            color.G = (colorObjeto.G as f32 * worleyValue as f32) as u8;
-            color.B = (colorObjeto.B as f32 * worleyValue as f32) as u8;
+            color.R = (colorObjeto.R as f32 * worleyValue as f32 * diffuseIntensity) as u8;
+            color.G = (colorObjeto.G as f32 * worleyValue as f32 * diffuseIntensity) as u8;
+            color.B = (colorObjeto.B as f32 * worleyValue as f32 * diffuseIntensity) as u8;
         }
         Materiales::HYBRID =>{
             let hybrid = HybridMulti::new();
             let hybridValue = hybrid.get([punto.x as f64, punto.y as f64, punto.z as f64]).abs();
 
-            color.R = (colorObjeto.R as f32 * hybridValue as f32) as u8;
-            color.G = (colorObjeto.G as f32 * hybridValue as f32) as u8;
-            color.B = (colorObjeto.B as f32 * hybridValue as f32) as u8;
+            color.R = (colorObjeto.R as f32 * hybridValue as f32 * diffuseIntensity) as u8;
+            color.G = (colorObjeto.G as f32 * hybridValue as f32 * diffuseIntensity) as u8;
+            color.B = (colorObjeto.B as f32 * hybridValue as f32 * diffuseIntensity) as u8;
+        }
+        Materiales::OPENSIMPLEX =>{
+            let open = OpenSimplex::new();
+            let openValue = open.get([punto.x as f64, punto.y as f64, punto.z as f64]).abs();
+
+            color.R = (colorObjeto.R as f32 * openValue as f32 * diffuseIntensity) as u8;
+            color.G = (colorObjeto.G as f32 * openValue as f32 * diffuseIntensity) as u8;
+            color.B = (colorObjeto.B as f32 * openValue as f32 * diffuseIntensity) as u8;
         }
         _ => {/* No hace nada, default */}
     }
@@ -119,7 +127,7 @@ fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> Col
     let mut diffuseIntensity: f32 = 0.0;
     let mut distancia: f32 = 0.0;
 
-    let mut color:ColorRGB = ColorRGB { R: 50, G: 50, B: 50 };
+    let mut color:ColorRGB = ColorRGB { R: 30, G: 30, B: 50 };
     let mut colorObjeto:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
 
     let mut idObjeto : u8 = 0;
