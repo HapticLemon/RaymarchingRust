@@ -1,7 +1,6 @@
 TODO:
     - Montar objeto Toro.
     - Documentar mejor la aplicación.
-    - Implementar sombras.
     - Mirar temas de antialias.
     - Creo que la iluinación no es correcta cuando la fuente está en 0 0 z.
     - Añadir definición de ruido SIMPLEX.
@@ -22,3 +21,5 @@ TODO:
 
 [20191031]  Implementado FOV para reducir distorsión.
 [20191031]  Cambios en las definiciones de ro y rd.
+
+[20191001]  Implementada la sombra "suave"

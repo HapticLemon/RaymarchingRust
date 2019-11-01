@@ -1,4 +1,4 @@
-use crate::Aux::Definiciones::Point3;
+use crate::Aux::Definiciones::{Point3, ColorRGB};
 
 // Coordenadas del punto en valores absolutos.
 //
@@ -32,6 +32,16 @@ pub fn MultiplyByScalar(a: Point3, scalar : f32) -> Point3{
     resultado.x = a.x * scalar;
     resultado.y = a.y * scalar;
     resultado.z = a.z * scalar;
+
+    return(resultado);
+}
+
+pub fn MultiplyColorByScalar(a: ColorRGB, scalar : f32) -> ColorRGB{
+    let mut resultado:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
+
+    resultado.R = (a.R as f32 * scalar) as u8;
+    resultado.G = (a.G as f32 * scalar) as u8;
+    resultado.B = (a.B as f32 * scalar) as u8;
 
     return(resultado);
 }

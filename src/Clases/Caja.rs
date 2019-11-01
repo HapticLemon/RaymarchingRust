@@ -3,6 +3,7 @@ use crate::Aux::Definiciones::{Point3, ColorRGB, Materiales};
 use crate::Aux::Vectores::{Length, Sub, Abs};
 use std::cmp;
 
+#[derive(Clone)]
 pub struct Caja{
     pub id : u8,
     pub tipo : String,

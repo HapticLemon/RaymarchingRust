@@ -2,6 +2,7 @@ use crate::Clases::Objeto::Objeto;
 use crate::Aux::Definiciones::{Point3, ColorRGB, Materiales};
 use crate::Aux::Vectores::{Length, Sub};
 
+#[derive(Clone)]
 pub struct Esfera{
     pub id : u8,
     pub tipo : String,

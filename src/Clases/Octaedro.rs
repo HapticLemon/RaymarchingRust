@@ -2,6 +2,7 @@ use crate::Clases::Objeto::Objeto;
 use crate::Aux::Definiciones::{Point3, ColorRGB, Materiales};
 use crate::Aux::Vectores::{Length, Sub, Abs};
 
+#[derive(Clone)]
 pub struct Octaedro{
     pub id : u8,
     pub tipo : String,

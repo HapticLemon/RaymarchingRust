@@ -59,7 +59,8 @@ pub const RIGHT: Point3 = Point3 { x: 1.0, y: 0.0, z: 0.0 };
 pub const UP: Point3 = Point3 { x: 0.0, y: 1.0, z: 0.0 };
 pub const FORWARD: Point3 = Point3 { x: 0.0, y: 0.0, z: 1.0 };
 
-pub const LIGHT: Point3 = Point3 { x: 200.0, y: 200.0, z: 180.0 };
+//pub const LIGHT: Point3 = Point3 { x: 200.0, y: 200.0, z: 180.0 };
+pub const LIGHT: Point3 = Point3 { x: 0.0, y: -200.0, z: -150.0 };
 
 pub const COLOR: ColorRGB = ColorRGB { R: 200, G: 230, B: 0 };
 pub const ImageAspectRatio: f32 = WIDTH as f32 / HEIGHT as f32;

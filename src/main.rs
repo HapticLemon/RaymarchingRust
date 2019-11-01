@@ -117,6 +117,96 @@ fn ilumina(punto : Point3, diffuseIntensity : f32, colorObjeto : ColorRGB, mater
 
 }
 
+/*
+def softShadow(ro):
+    t = 0
+    shadow = 1
+    global resto_objetos
+
+    # Monto una lista de objetos para calcular la sombra en la que no está el objeto
+    # sobre el que hemos hecho impacto.
+    #
+    resto_objetos = []
+    for elemento in objetos:
+        if elemento.getId() != objId:
+            resto_objetos.append(elemento)
+
+    rd = normalize(LIGHT - ro)
+    for i in range(MAXSTEPS):
+        punto = ro + rd * t;
+        distancia = map_the_world(punto)
+
+        if distancia < MINIMUM_HIT_DISTANCE:
+            resto_objetos = objetos
+            return 0
+        shadow = min(shadow, (8.0 * distancia) / i);
+        t += distancia
+
+    # Al salir, volvemos a dejar las cosas como estaban o fallará el cálculo de la normal.
+    resto_objetos = objetos
+    return np.clip(shadow,0,1)
+    */
+
+fn clip (valor : f32, min : f32, max: f32) -> f32{
+    if valor > max{
+        return max;
+    }
+    if valor < min{
+        return min
+    }
+    return valor
+}
+
+// Cálculo de la sombra "suave" entre objetos. Funciona pero resulta algo ortopédica.
+//
+fn softShadow(ro : Point3, idObjeto :u8, Escena : &Vec<Box<dyn Objeto>>) -> f32 {
+    let mut t : f32 = 0.0;
+    let mut shadow : f32 = 1.0;
+    let mut distancia : f32 = 1000.0;
+    let mut distanciaObjeto: f32 = 0.0;
+    let mut cont : usize = 0;
+    let mut itemId : u8 = 0;
+    let mut restoEscena: Vec<Box<Objeto>> = Vec::new();
+
+    let mut rd:Point3;
+    let mut punto:Point3;
+
+    let mut color:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
+    let mut material : Materiales = Materiales::NOMAT;
+
+    // Montamos un vector con los demás objetos, excluyendo el tocado por el rayo
+    // Consigo la posición del objeto tocado y más tarde la elimino.
+    //
+    for item in Escena.iter() {
+        itemId = item.getId();
+        if item.getId() != idObjeto {
+            cont += 1;
+        }else{
+            break
+        }
+    }
+
+    // Monto una copia de la escena original aunque sin el objeto tocado, ya que de lo
+    // contrario se haría sombra a sí mismo. Así me aseguro de que si hay sombra la
+    // va a causar algún otro.
+    restoEscena = Escena.clone();
+    restoEscena.remove(cont);
+
+    rd = Normalize(Sub(LIGHT, ro));
+
+    for i in 1..MAXSTEPS{
+        punto = Add(ro,MultiplyByScalar(rd,t));
+        let (distancia, idObjeto, colorObjeto, materialObjeto)  = mapTheWorld(punto, &restoEscena);
+        if distancia < MINIMUM_HIT_DISTANCE {
+            return 0.0;
+        }
+        shadow = ((8.0 * distancia) / i as f32).min(shadow);
+        t += distancia
+    }
+
+    return clip(shadow,0.0,1.0)
+}
+
 fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> ColorRGB {
 
     let mut punto:Point3;
@@ -130,6 +220,9 @@ fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> Col
     let mut color:ColorRGB = ColorRGB { R: 30, G: 30, B: 50 };
     let mut colorObjeto:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
 
+    let mut valorSombra : f32 = 1.0;
+    let mut colorSombra:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
+
     let mut idObjeto : u8 = 0;
     let mut materialObjeto : Materiales = Materiales::NOMAT;
 
@@ -137,12 +230,20 @@ fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> Col
         punto = Add(ro,MultiplyByScalar(rd,t));
         let (distancia, idObjeto, colorObjeto, materialObjeto) = mapTheWorld(punto, Escena);
         if distancia < MINIMUM_HIT_DISTANCE {
+            // Si sólo tenemos un objeto no calcularemos sombras.
+            if Escena.len() > 1 {
+                valorSombra = softShadow(punto, idObjeto, Escena);
+                if valorSombra == 0.0 {
+                    return colorSombra
+                }
+            }
+
             //directionToLight = Normalize(Sub(punto,LIGHT));
             directionToLight = Normalize(Sub(LIGHT,punto));
             normal = calculateNormal(punto, &Escena, idObjeto as usize);
             diffuseIntensity = Dot(normal, directionToLight).max(0.0);
             color = ilumina(punto, diffuseIntensity,  colorObjeto, materialObjeto);
-            return color
+            return MultiplyColorByScalar(color , valorSombra)
         }
         t += distancia
     }
