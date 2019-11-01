@@ -117,36 +117,6 @@ fn ilumina(punto : Point3, diffuseIntensity : f32, colorObjeto : ColorRGB, mater
 
 }
 
-/*
-def softShadow(ro):
-    t = 0
-    shadow = 1
-    global resto_objetos
-
-    # Monto una lista de objetos para calcular la sombra en la que no está el objeto
-    # sobre el que hemos hecho impacto.
-    #
-    resto_objetos = []
-    for elemento in objetos:
-        if elemento.getId() != objId:
-            resto_objetos.append(elemento)
-
-    rd = normalize(LIGHT - ro)
-    for i in range(MAXSTEPS):
-        punto = ro + rd * t;
-        distancia = map_the_world(punto)
-
-        if distancia < MINIMUM_HIT_DISTANCE:
-            resto_objetos = objetos
-            return 0
-        shadow = min(shadow, (8.0 * distancia) / i);
-        t += distancia
-
-    # Al salir, volvemos a dejar las cosas como estaban o fallará el cálculo de la normal.
-    resto_objetos = objetos
-    return np.clip(shadow,0,1)
-    */
-
 fn clip (valor : f32, min : f32, max: f32) -> f32{
     if valor > max{
         return max;
