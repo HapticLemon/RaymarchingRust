@@ -1,0 +1,18 @@
+[
+  {
+    "id" : 0,
+    "tipo" : "Esfera",
+    "radio" : 30,
+    "traslacion" : [0,0,-150],
+    "color" : [250,0,0],
+    "material" : "NOMAT"
+  },
+  {
+    "id" : 1,
+    "tipo" : "Octaedro",
+    "radio" : 10,
+    "traslacion" : [0,-60,-140],
+    "color" : [0,0,250],
+    "material" : "NOMAT"
+  }
+]

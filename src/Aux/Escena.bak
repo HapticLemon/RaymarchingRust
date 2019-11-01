@@ -1,0 +1,75 @@
+[
+
+  {
+    "id" : 1,
+    "tipo" : "Esfera",
+    "radio" : 20,
+    "traslacion" : [0,0,-150],
+    "color" : [250,0,0],
+    "material" : "NOMAT"
+  },
+  {
+    "id" : 2,
+    "tipo" : "Esfera",
+    "radio" : 20,
+    "traslacion" : [40,0,-150],
+    "color" : [250,0,0],
+    "material" : "WORLEY"
+  },
+  {
+    "id" : 3,
+    "tipo" : "Esfera",
+    "radio" : 20,
+    "traslacion" : [0,40,-150],
+    "color" : [250,0,0],
+    "material" : "HYBRID"
+  },
+  {
+    "id" : 4,
+    "tipo" : "Esfera",
+    "radio" : 20,
+    "traslacion" : [0,-40,-150],
+    "color" : [250,0,0],
+    "material" : "PERLIN"
+  },
+  {
+    "id" : 5,
+    "tipo" : "Esfera",
+    "radio" : 20,
+    "traslacion" : [-40,0,-150],
+    "color" : [250,0,0],
+    "material" : "OPENSIMPLEX"
+  },
+  {
+    "id" : 6,
+    "tipo" : "Octaedro",
+    "radio" : 40,
+    "traslacion" : [-60,-60,-150],
+    "color" : [0,0,250],
+    "material" : "OPENSIMPLEX"
+  },
+  {
+    "id" : 7,
+    "tipo" : "Octaedro",
+    "radio" : 40,
+    "traslacion" : [60,60,-150],
+    "color" : [0,0,250],
+    "material" : "PERLIN"
+  },
+  {
+    "id" : 8,
+    "tipo" : "Octaedro",
+    "radio" : 40,
+    "traslacion" : [-60,60,-150],
+    "color" : [0,0,250],
+    "material" : "WORLEY"
+  },
+  {
+    "id" : 8,
+    "tipo" : "Octaedro",
+    "radio" : 40,
+    "traslacion" : [60,-60,-150],
+    "color" : [0,0,250],
+    "material" : "HYBRID"
+  }
+]
