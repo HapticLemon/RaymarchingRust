@@ -26,7 +26,7 @@ use std::io::BufReader;
 use std::fs::File;
 
 use noise::{NoiseFn, Perlin, Worley, Turbulence, HybridMulti, OpenSimplex};
-use std::f32::consts::PI;
+use std::f32::consts::{PI, E};
 
 // Cálculo de la distancia a los elementos de la escena.
 // Por el momento y para simplificar, solamente se contempla un
@@ -177,6 +177,17 @@ fn softShadow(ro : Point3, idObjeto :u8, Escena : &Vec<Box<dyn Objeto>>) -> f32 
     return clip(shadow,0.0,1.0)
 }
 
+// Según idea de Íñigo Quílez.
+// https://iquilezles.org/www/articles/fog/fog.htm
+fn applyFog(color : ColorRGB, distancia : f32) -> ColorRGB {
+    let mut fogAmount : f32 = 0.0;
+
+    fogAmount = 1.0 - E.powf(-distancia * 0.005);
+
+    return mixColor(color, FOGCOLOR, fogAmount)
+
+}
+
 fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> ColorRGB {
 
     let mut punto:Point3;
@@ -195,29 +206,33 @@ fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> Col
 
     let mut idObjeto : u8 = 0;
     let mut materialObjeto : Materiales = Materiales::NOMAT;
+    let mut fog : f32 = 0.0;
 
     for x in 0..MAXSTEPS{
         punto = Add(ro,MultiplyByScalar(rd,t));
         let (distancia, idObjeto, colorObjeto, materialObjeto) = mapTheWorld(punto, Escena);
         if distancia < MINIMUM_HIT_DISTANCE {
             // Si sólo tenemos un objeto no calcularemos sombras.
-            if Escena.len() > 1 {
+            // TODO : Hay que revisar la sombra para que se muestre bien; parece que "atraviesa".
+            // TODO : También debe de verse afectada por la niebla.
+            /*if Escena.len() > 1 {
                 valorSombra = softShadow(punto, idObjeto, Escena);
                 if valorSombra == 0.0 {
                     return colorSombra
                 }
-            }
+            }*/
 
             //directionToLight = Normalize(Sub(punto,LIGHT));
             directionToLight = Normalize(Sub(LIGHT,punto));
             normal = calculateNormal(punto, &Escena, idObjeto as usize);
             diffuseIntensity = Dot(normal, directionToLight).max(0.0);
             color = ilumina(punto, diffuseIntensity,  colorObjeto, materialObjeto);
+            color = applyFog(color, t);
             return MultiplyColorByScalar(color , valorSombra)
         }
-        t += distancia
+        t += distancia;
     }
-
+    color = applyFog(color, t);
     return(color)
 }
 

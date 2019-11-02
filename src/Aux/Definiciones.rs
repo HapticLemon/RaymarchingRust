@@ -63,10 +63,14 @@ pub const FORWARD: Point3 = Point3 { x: 0.0, y: 0.0, z: 1.0 };
 pub const LIGHT: Point3 = Point3 { x: 0.0, y: -200.0, z: -150.0 };
 
 pub const COLOR: ColorRGB = ColorRGB { R: 200, G: 230, B: 0 };
+pub const FOGCOLOR: ColorRGB = ColorRGB { R: 128, G: 0, B: 128 };
+
 pub const ImageAspectRatio: f32 = WIDTH as f32 / HEIGHT as f32;
 
 // Ángulo para el FOV. Actúa como una especie de zoom.
 pub const ALPHA :f32 = 55.0;
+
+pub const DENSIDAD : f32 = 0.5;
 
 
 

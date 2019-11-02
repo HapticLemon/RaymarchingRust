@@ -46,6 +46,18 @@ pub fn MultiplyColorByScalar(a: ColorRGB, scalar : f32) -> ColorRGB{
     return(resultado);
 }
 
+// Interpolación linear de dos colores. Pásalo a Vectores.
+//
+fn mixColor(x : ColorRGB, y : ColorRGB, a : f32) -> ColorRGB{
+    let mut resultado : ColorRGB = ColorRGB{R:0, G:0, B:0};
+
+    resultado.R = (x.R as f32 * (1.0 - a) + y.R as f32 * a) as u8;
+    resultado.G = (x.G as f32 * (1.0 - a) + y.G as f32 * a) as u8;
+    resultado.B = (x.B as f32 * (1.0 - a) + y.B as f32 * a) as u8;
+
+    return resultado;
+}
+
 pub fn Dot(a: Point3, b: Point3) -> f32{
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }

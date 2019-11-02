@@ -14,5 +14,29 @@
     "traslacion" : [0,-60,-140],
     "color" : [0,0,250],
     "material" : "NOMAT"
+  },
+  {
+    "id" : 2,
+    "tipo" : "Esfera",
+    "radio" : 30,
+    "traslacion" : [90,0,-250],
+    "color" : [250,0,0],
+    "material" : "NOMAT"
+  },
+  {
+    "id" : 3,
+    "tipo" : "Esfera",
+    "radio" : 30,
+    "traslacion" : [0,120,-350],
+    "color" : [250,0,0],
+    "material" : "NOMAT"
+  },
+  {
+    "id" : 4,
+    "tipo" : "Esfera",
+    "radio" : 30,
+    "traslacion" : [-150,0,-450],
+    "color" : [250,0,0],
+    "material" : "NOMAT"
   }
 ]
