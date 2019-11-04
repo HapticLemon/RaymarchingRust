@@ -42,8 +42,8 @@ pub struct itemJSON {
     pub material : Materiales
 }
 
-pub const WIDTH: u32 = 1024;
-pub const HEIGHT: u32 = 683;
+pub const WIDTH: u32 = 800;
+pub const HEIGHT: u32 = 600;
 
 pub const MAXSTEPS: u32 = 32;
 
@@ -52,7 +52,9 @@ pub const EPSILON: f32 = 0.01;
 pub const INFINITE: f32 = 100000.0;
 
 pub const FL: f32 = 0.5;
-pub const MINIMUM_HIT_DISTANCE: f32 = 0.01;
+
+// A mayor valor, menor "efecto halo" pero más dientes e la sombra.
+pub const MINIMUM_HIT_DISTANCE: f32 = 0.31;
 
 pub const EYE: Point3 = Point3 { x: 0.0, y: 0.0, z: 0.0 };
 pub const RIGHT: Point3 = Point3 { x: 1.0, y: 0.0, z: 0.0 };
@@ -70,7 +72,10 @@ pub const ImageAspectRatio: f32 = WIDTH as f32 / HEIGHT as f32;
 // Ángulo para el FOV. Actúa como una especie de zoom.
 pub const ALPHA :f32 = 55.0;
 
-pub const DENSIDAD : f32 = 0.5;
+pub const DENSIDAD : f32 = 0.005;
+pub const NOVENTAGRADOSRAD : f32 = 1.5708;
+pub const CASTSHADOWS : bool = true;
+pub const FOG : bool = false;
 
 
 

@@ -129,7 +129,7 @@ fn clip (valor : f32, min : f32, max: f32) -> f32{
 
 // Cálculo de la sombra "suave" entre objetos. Funciona pero resulta algo ortopédica.
 //
-fn softShadow(ro : Point3, idObjeto :u8, Escena : &Vec<Box<dyn Objeto>>) -> f32 {
+fn softShadow(ro : Point3, idObjeto :u8, Escena : &Vec<Box<dyn Objeto>>, normal : Point3) -> f32 {
     let mut t : f32 = 0.0;
     let mut shadow : f32 = 1.0;
     let mut distancia : f32 = 1000.0;
@@ -143,6 +143,7 @@ fn softShadow(ro : Point3, idObjeto :u8, Escena : &Vec<Box<dyn Objeto>>) -> f32 
 
     let mut color:ColorRGB = ColorRGB { R: 0, G: 0, B: 0 };
     let mut material : Materiales = Materiales::NOMAT;
+    let mut angulo : f32 = 0.0;
 
     // Montamos un vector con los demás objetos, excluyendo el tocado por el rayo
     // Consigo la posición del objeto tocado y más tarde la elimino.
@@ -164,6 +165,15 @@ fn softShadow(ro : Point3, idObjeto :u8, Escena : &Vec<Box<dyn Objeto>>) -> f32 
 
     rd = Normalize(Sub(LIGHT, ro));
 
+    // Compruebo el ángulo entre el vector hacia la luz y la normal del objeto.
+    // Si dicho ángulo pasa de 90 grados (en radianes), no hay sombra. Nos sirve para
+    // evitar "dobles sombras", por ejemplo en la parte superior e inferior de una esfera.
+    //
+    angulo = (Dot(normal, rd) / Length(normal) * Length(rd)).acos();
+    if angulo > NOVENTAGRADOSRAD {
+        return 1.0;
+    }
+
     for i in 1..MAXSTEPS{
         punto = Add(ro,MultiplyByScalar(rd,t));
         let (distancia, idObjeto, colorObjeto, materialObjeto)  = mapTheWorld(punto, &restoEscena);
@@ -182,7 +192,7 @@ fn softShadow(ro : Point3, idObjeto :u8, Escena : &Vec<Box<dyn Objeto>>) -> f32 
 fn applyFog(color : ColorRGB, distancia : f32) -> ColorRGB {
     let mut fogAmount : f32 = 0.0;
 
-    fogAmount = 1.0 - E.powf(-distancia * 0.005);
+    fogAmount = 1.0 - E.powf(-distancia * DENSIDAD);
 
     return mixColor(color, FOGCOLOR, fogAmount)
 
@@ -212,22 +222,30 @@ fn raymarching(ro : Point3, rd : Point3, Escena : &Vec<Box<dyn Objeto>>)  -> Col
         punto = Add(ro,MultiplyByScalar(rd,t));
         let (distancia, idObjeto, colorObjeto, materialObjeto) = mapTheWorld(punto, Escena);
         if distancia < MINIMUM_HIT_DISTANCE {
-            // Si sólo tenemos un objeto no calcularemos sombras.
-            // TODO : Hay que revisar la sombra para que se muestre bien; parece que "atraviesa".
-            // TODO : También debe de verse afectada por la niebla.
-            /*if Escena.len() > 1 {
-                valorSombra = softShadow(punto, idObjeto, Escena);
-                if valorSombra == 0.0 {
-                    return colorSombra
-                }
-            }*/
-
             //directionToLight = Normalize(Sub(punto,LIGHT));
             directionToLight = Normalize(Sub(LIGHT,punto));
             normal = calculateNormal(punto, &Escena, idObjeto as usize);
+
+            // Si sólo tenemos un objeto no calcularemos sombras.
+            // TODO : Hay que revisar la sombra para que se muestre bien; parece que "atraviesa".
+            // TODO : También debe de verse afectada por la niebla.
+            if CASTSHADOWS == true {
+                if Escena.len() > 1 {
+                    valorSombra = softShadow(punto, idObjeto, Escena, normal);
+                    if valorSombra == 0.0 {
+                        if FOG == true {
+                            return applyFog(colorSombra, t);
+                        }
+                        return colorSombra;
+                    }
+                }
+            }
+
             diffuseIntensity = Dot(normal, directionToLight).max(0.0);
             color = ilumina(punto, diffuseIntensity,  colorObjeto, materialObjeto);
-            color = applyFog(color, t);
+            if FOG == true {
+                color = applyFog(color, t);
+            }
             return MultiplyColorByScalar(color , valorSombra)
         }
         t += distancia;
@@ -307,6 +325,9 @@ fn main() {
     // Proceso de la imagen
     //
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
+        if x == 400 && y == 320{
+            print!("GateteRLz")
+        }
         NDC_X = (x as f32 + CORRECCION) / WIDTH as f32;
         NDC_Y = (y as f32 + CORRECCION) / HEIGHT as f32;
 

@@ -1,12 +1,8 @@
 TODO:
     - Montar objeto Toro.
     - Documentar mejor la aplicación.
-    - Revisar la implementación de las sombras.
-        Se producen en ambos extremos de la esfera.
-        Deberían de verse afectadas por la niebla.
     - Mirar temas de antialias.
     - Creo que la iluinación no es correcta cuando la fuente está en 0 0 z.
-    - Añadir definición de ruido SIMPLEX.
 
 [201910XX]  Estructura básica del programa. Primer raymarching.
 [20191026]  Añadida estructura de directorios para organizar el código.
@@ -28,3 +24,7 @@ TODO:
 [20191101]  Implementar sombras.
 
 [20191102]  Implementada niebla.
+
+[20191104]  Arreglado el tema de la sombra doble.
+[20191104]  Sombras afectadas por la niebla.
+[20191104]  Revisado tema de los artefactos. Tiene que ver con la distancia mínima.

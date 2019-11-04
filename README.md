@@ -14,6 +14,13 @@ Ruido procedural (usando la librería noise)
   - Worley.
   - OpenSimplex.
   - Multifractal Hybrid.
+
+Sombras
+    - Implementación de sombra suave según idea de Íñigo Quílez.
+
+Niebla
+    - Implementación de niebla volumétrica según idea de Íñigo Quílez.
+
   
 ![Escena de ejemplo](Rustmarching.jpg)
 
@@ -24,3 +31,7 @@ https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-
 https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 
 http://viclw17.github.io/2018/11/29/raymarching-algorithm/
+
+https://www.iquilezles.org/www/articles/rmshadows/rmshadows.htm
+
+https://iquilezles.org/www/articles/fog/fog.htm

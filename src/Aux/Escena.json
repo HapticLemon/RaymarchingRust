@@ -11,7 +11,7 @@
     "id" : 1,
     "tipo" : "Octaedro",
     "radio" : 10,
-    "traslacion" : [0,-60,-140],
+    "traslacion" : [0,-70,-140],
     "color" : [0,0,250],
     "material" : "NOMAT"
   },
@@ -19,7 +19,7 @@
     "id" : 2,
     "tipo" : "Esfera",
     "radio" : 30,
-    "traslacion" : [90,0,-250],
+    "traslacion" : [40,0,-250],
     "color" : [250,0,0],
     "material" : "NOMAT"
   },
